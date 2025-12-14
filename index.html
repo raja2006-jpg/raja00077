@@ -1,142 +1,729 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DHINESH NANDHU </title>
+  <title>ShopEase - Simple E-commerce Demo (UPI/GPay Added)</title>
+
   <style>
-    /* CSS Styling */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(to right, #71ffff, #ffb6f7);
-      text-align: center;
+      background: #f4f4f4;
+      color: #222;
     }
-
     header {
-      background-color: #ee07b5e9;
-      padding: 20px;
-      color: rgb(225, 220, 220);
-      text-align: center;
-    }
-
-    nav {
-      background-color: #333;
-      overflow: hidden;
-    }
-
-    nav a {
-      float: left;
-      display: block;
-      color: #f2f2f2;
-      text-align: center;
-      padding: 14px 20px;
-      text-decoration: none;
-    }
-
-    nav a:hover {
-      background-color: #ddd;
-      color: black;
-    }
-
-    main {
-      padding: 30px;
-    }
-
-    button {
-      padding: 10px 20px;
-      background-color: #4c60af;
-      border: none;
+      background: #222;
       color: white;
-      cursor: pointer;  
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1em;
+    }
+    header h1 { margin: 0; font-size: 1.25rem; }
+    header nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 1em;
+      font-weight: bold;
+    }
+    .container { padding: 1em; }
+    .filter { margin-bottom: 1em; }
+
+    .search-box {
+      text-align: center;
+      margin-bottom: 1.2em;
+    }
+    .search-box input {
+      width: 60%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #aaa;
       font-size: 16px;
+    }
+
+    .product-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      justify-content: center;
+    }
+    .product {
+      background: white;
+      border: 1px solid #ccc;
+      padding: 1em;
+      width: 200px;
+      text-align: center;
+      border-radius: 6px;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    .product:hover { transform: scale(1.03); }
+    .product img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
       border-radius: 5px;
     }
 
-    button:hover {
-      background-color: #0b0c02;
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 0.5em 1em;
+      margin-top: 0.5em;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+    button:hover { background: #0056b3; }
+
+    .wishlist-btn {
+      background: #ff0066;
+      margin-top: 8px;
     }
 
-    #message {
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 1.5em;
-      color: #ff0077;
-      opacity: 0;
-      transition: opacity 1s ease-in;
+    .remove-btn {
+      background: red;
+      margin-left: 10px;
     }
 
-    #message.show {
-      opacity: 1;
+    .cart-page, .product-detail {
+      max-width: 760px;
+      margin: 2em auto;
+      background: white;
+      padding: 1em;
+      border-radius: 6px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.05);
     }
-
-    #imageContainer img {
-      margin-top: 20px;
-      width: 220px;
-      border-radius: 15px;
-      opacity: 0;
-      transition: opacity 1s ease-in;
-      box-shadow: 0 0 20px rgba(255, 20, 147, 0.7);
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      padding: 0.5em 0;
+      gap: 10px;
     }
-
-    #imageContainer img.show {
-      opacity: 1;
+    .cart-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-right: 10px;
     }
-
-    footer {
+    .cart-item-info {
+      flex-grow: 1;
+      text-align: left;
+    }
+    .back-btn {
+      display: block;
       text-align: center;
-      padding: 10px;
-      background-color: #2b2a2a;
-      color: rgb(233, 233, 242);
-      position: fixed;
-      bottom: 0;
-      width: 100%;
+      margin-top: 1em;
+      color: #007bff;
     }
+
+    /* small modal / box for UPI input */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(0,0,0,0.45);
+      z-index: 9999;
+      padding: 16px;
+    }
+    .modal-box {
+      background: white;
+      padding: 1.2em;
+      border-radius: 8px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.18);
+    }
+    .upi-input {
+      width: 80%;
+      padding: 8px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #aaa;
+    }
+    .small { font-size: 0.9rem; color: #555; }
+    .processing { font-weight: bold; font-size: 1.2rem; animation: blink 1s infinite; color: #007bff; }
+    @keyframes blink { 50% { opacity: 0.3; } }
+
+    /* payment buttons / logos area */
+    .payment-grid {
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      align-items:center;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .pay-option {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid #ddd;
+      cursor:pointer;
+      background:#fafafa;
+      transition: transform .15s ease, box-shadow .15s ease;
+      min-width:180px;
+      justify-content:center;
+    }
+    .pay-option:hover { transform: translateY(-4px); box-shadow:0 8px 22px rgba(0,0,0,0.08); }
+    .pay-option.selected { border-color:#007bff; box-shadow:0 10px 24px rgba(0,123,255,0.12); }
+
+    .pay-logo { width:54px; height:54px; display:flex; align-items:center; justify-content:center; }
+    .pay-label { font-weight:600; font-size:0.975rem; color:#333; }
+
+    /* success page logo */
+    .success-logo { width:86px; height:86px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:10px; border-radius:12px; }
+
+    /* small responsive */
+    @media (max-width:640px) {
+      .search-box input { width: 92%; }
+      .product { width: 45%; }
+    }
+    @media (max-width:420px) {
+      .product { width: 100%; }
+    }
+
   </style>
 </head>
-<body>
 
-  <!-- Header Section -->
+<body>
   <header>
-    <h1>Welcome to My Website</h1>
-    <p>This is a simple website using the My Darling Buttu 💕</p>
+    <h1>ShopEase</h1>
+
+    <nav>
+      <a href="#" id="homeLink">🏠 Home</a>
+      <a href="#" id="wishlistLink">❤️ (<span id="wish-count">0</span>)</a>
+      <a href="#" id="cartLink">🛒 Cart (<span id="cart-count">0</span>)</a>
+      <a href="#" id="orderHistoryLink">📜 Order History</a>
+    </nav>
   </header>
 
-  <!-- Navigation -->
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">About</a>
-    <a href="#">Contact Love</a>
-  </nav>
+  <main class="container" id="main-content"></main>
 
-  <!-- Main Content -->
-  <main>
-    <h2>Hello Nandhu chlm! 💖</h2>
-    <p>Click the button below to see the surprise chlm 😘</p>
-    <button onclick="showMessage()">Click Me</button>
-    <p id="message"></p>
-    <div id="imageContainer"></div>
-  </main>
+  <!-- UPI modal container (rendered dynamically) -->
+  <div id="modal-root"></div>
 
-  <!-- Footer -->
-  <footer>
-    &copy; 2025 My First Website
-  </footer>
-
-  <!-- JavaScript -->
   <script>
-    function showMessage() {
-      // Show message text
-      const msg = document.getElementById("message");
-      msg.textContent = "I LOVE U CHLM UMAHHHHHHHH!!! 💖💋";
-      msg.classList.add("show");
+    /* -------------------------
+       Data + Storage
+       ------------------------- */
+    const products = [
+      { id: 1, name: "Smartphone", category: "mobile & tablets", price: 699, img: "https://tse3.mm.bing.net/th/id/OIP.78JCt2Jnf_dMV0GnxvYwqAHaFj" },
+      { id: 2, name: "T-Shirt", category: "fashion", price: 250, img: "https://fiverr-res.cloudinary.com/images/t_main1,q_auto,f_auto/gigs/243950867/original/b09abcfaaa780cd873940c7d283d641bbb12c4e3/create-amazing-custom-t-shirt-design-and-typography-design.jpg" },
+      { id: 3, name: "Neckband", category: "earphones", price: 999, img: "https://th.bing.com/th/id/OIP.2SXwxQE6dgxLMibRA6t_rwHaF7" },
+      { id: 4, name: "Kurti", category: "fashion", price: 150, img: "https://tipsandbeauty.com/wp-content/uploads/2022/04/Simple-Kurti-Designs.jpg"},
+      { id: 5, name: "Bed", category: "furniture", price: 2000, img: "https://tse3.mm.bing.net/th/id/OIP.Ydj1U7C2E2U2LC8fROU-JwHaE8" },
+      { id: 6, name: "Dining Table", category: "furniture", price: 5000, img: "https://tse3.mm.bing.net/th/id/OIP.tA0kEMcobC3HAWcV-7uQ_QHaEK" },
+      { id: 7, name: "Crocs for Men", category: "sleepers", price: 300, img: "https://mir-s3-cdn-cf.behance.net/projects/404/af6115142621615.6274df7da59b1.jpg" },
+      { id: 8, name: "Crocs for women", category: "sleepers", price: 350, img: "https://www.sportsdirect.com/images/products/22915924_h.jpg" },
+      { id: 9, name: "Earbuds", category: "earphones", price: 799, img: "https://m.media-amazon.com/images/I/71-TQ1oSm+L._AC_SL1500_.jpg" },
+      { id: 10, name: "Tablet", category: "mobile & tablets", price: 35000, img: "https://tse1.mm.bing.net/th/id/OIP.XXvgEBnLF9CyKfz48QhKbQHaFr" },
+      { id: 11, name: "Gold Watch", category: "watches", price: 3500, img: "https://wallpaperaccess.com/full/366217.jpg" },
+      { id: 12, name: "Smart Watches", category: "watches", price: 1200, img: "https://static.vecteezy.com/system/resources/previews/032/427/657/non_2x/digital-smart-watch-on-abstract-background-generative-ai-photo.jpg" },
+      { id: 13, name: "Dolls for Babes", category: "dolls", price: 120, img: "https://i.pinimg.com/originals/a9/5f/c0/a95fc0264ce57314a3c9f710d0d5a454.jpg"},
+      { id: 14, name: "Sony TV", category: "tv & appliances", price: 18000, img: "https://images.livspace-cdn.com/plain/https://d3gq2merok8n5r.cloudfront.net/abhinav/ond-1634120396-Obfdc/jas-1657179080-NnXAg/tv-unit-1657603921-6y6tm/living-view-3-option-2-1-1-1662029420-4RCM2.jpg" },
+    ];
 
-      // Show image
-      const imgContainer = document.getElementById("imageContainer");
-      imgContainer.innerHTML = '<img src="image.jpg" alt="Love Image" width="300" height="300" class="show">';
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    let orderHistory = JSON.parse(localStorage.getItem("orderHistory")) || [];
+
+    const mainContent = document.getElementById("main-content");
+    const modalRoot = document.getElementById("modal-root");
+    const cartCount = document.getElementById("cart-count");
+    const wishCount = document.getElementById("wish-count");
+
+    function updateCartCount() { cartCount.textContent = cart.length; }
+    function updateWishCount() { wishCount.textContent = wishlist.length; }
+
+    /* -------------------------
+       Home / Product UI
+       ------------------------- */
+    function showHome() {
+      mainContent.innerHTML = `
+        <div class="search-box">
+          <input type="text" id="searchBar" placeholder="Search products...">
+        </div>
+
+        <div class="filter">
+          <label>Filter by category:</label>
+          <select id="category">
+            <option value="all">All</option>
+            <option value="mobile & tablets">Mobile & Tablets</option>
+            <option value="fashion">Fashion</option>
+            <option value="furniture">Furniture</option>
+            <option value="sleepers">Sleepers</option>
+            <option value="earphones">Earphones</option>
+            <option value="watches">Watches</option>
+            <option value="dolls">Dolls</option>
+            <option value="tv & appliances">Tv & Appliances</option>
+          </select>
+        </div>
+
+        <div class="product-list" id="product-list"></div>
+      `;
+
+      const listEl = document.getElementById("product-list");
+      const categorySelect = document.getElementById("category");
+      const searchBar = document.getElementById("searchBar");
+
+      function render(list) {
+        listEl.innerHTML = list.map(p => `
+          <div class="product">
+            <img src="${p.img}" onclick="showProductDetails(${p.id})">
+            <h3>${p.name}</h3>
+            <p><strong>Price:</strong> $${p.price}</p>
+
+            <button onclick="addToCart(${p.id})">Add to Cart</button>
+            <button class="wishlist-btn" onclick="addToWishlist(${p.id})">❤️</button>
+          </div>
+        `).join("");
+      }
+
+      render(products);
+
+      categorySelect.addEventListener("change", () => {
+        const value = categorySelect.value;
+        const filtered = value === "all" ? products : products.filter(p => p.category === value);
+        render(filtered);
+      });
+
+      searchBar.addEventListener("keyup", () => {
+        const txt = searchBar.value.toLowerCase();
+        const result = products.filter(p => p.name.toLowerCase().includes(txt));
+        render(result);
+      });
     }
-  </script>
 
+    function showProductDetails(id) {
+      const p = products.find(x => x.id === id);
+
+      mainContent.innerHTML = `
+        <div class="product-detail">
+          <img src="${p.img}" style="width:100%; height:250px; object-fit:cover; border-radius:8px;">
+          <h2>${p.name}</h2>
+          <p><strong>Category:</strong> ${p.category}</p>
+          <h3>Price: $${p.price}</h3>
+
+          <button onclick="addToCart(${p.id})">Add to Cart</button>
+          <button class="wishlist-btn" onclick="addToWishlist(${p.id})">❤️</button>
+
+          <a href="#" class="back-btn" onclick="showHome()">⬅ Back</a>
+        </div>
+      `;
+    }
+
+    /* -------------------------
+       Cart / Wishlist
+       ------------------------- */
+    function addToCart(id) {
+      const product = products.find(p => p.id === id);
+      cart.push(product);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(`${product.name} added to cart!`);
+      updateCartCount();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      showCart();
+      updateCartCount();
+    }
+
+    function showCart() {
+      if (cart.length === 0) {
+        mainContent.innerHTML =
+          `<div class="cart-page"><p>Your cart is empty.</p><a href="#" class="back-btn" onclick="showHome()">⬅ Back</a></div>`;
+        return;
+      }
+
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+      mainContent.innerHTML = `
+        <div class="cart-page">
+          <h2>🛒 Your Cart</h2>
+          ${cart.map((item, i) => `
+            <div class="cart-item">
+              <img src="${item.img}">
+              <div class="cart-item-info">
+                <p><strong>${item.name}</strong></p>
+                <p>$${item.price}</p>
+              </div>
+              <button class="remove-btn" onclick="removeFromCart(${i})">Remove</button>
+            </div>
+          `).join("")}
+          <h3>Total: $${total}</h3>
+          <button onclick="checkout()">Confirm the Order</button>
+          <a href="#" class="back-btn" onclick="showHome()">⬅ Continue Shopping</a>
+        </div>
+      `;
+    }
+
+    function addToWishlist(id) {
+      const item = products.find(p => p.id === id);
+      if (wishlist.some(w => w.id === id)) {
+        alert("This item is already in Wishlist!");
+        return;
+      }
+      wishlist.push(item);
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      updateWishCount();
+      alert("Added to Wishlist!");
+    }
+
+    function removeWishlist(index) {
+      wishlist.splice(index, 1);
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      showWishlist();
+      updateWishCount();
+    }
+
+    function moveToCart(id, index) {
+      addToCart(id);
+      removeWishlist(index);
+    }
+
+    function showWishlist() {
+      if (wishlist.length === 0) {
+        mainContent.innerHTML = `
+          <div class="cart-page">
+            <h2>❤️ Wishlist</h2>
+            <p>No items in wishlist.</p>
+            <a href="#" class="back-btn" onclick="showHome()">⬅ Back</a>
+          </div>
+        `;
+        return;
+      }
+
+      mainContent.innerHTML = `
+        <div class="cart-page">
+          <h2>❤️ Your Wishlist</h2>
+          ${wishlist.map((item, index) => `
+            <div class="cart-item">
+              <img src="${item.img}">
+              <div class="cart-item-info">
+                <p><strong>${item.name}</strong></p>
+                <p>$${item.price}</p>
+              </div>
+
+              <button onclick="moveToCart(${item.id}, ${index})">Add to Cart</button>
+              <button class="remove-btn" onclick="removeWishlist(${index})">Remove</button>
+            </div>
+          `).join("")}
+
+          <a href="#" class="back-btn" onclick="showHome()">⬅ Back</a>
+        </div>
+      `;
+    }
+
+    /* -------------------------
+       Checkout + UPI Payment Flow (Option A)
+       ------------------------- */
+    function checkout() {
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+      mainContent.innerHTML = `
+        <div class="cart-page">
+          <h2>Checkout</h2>
+          <p>Total: <strong>$${total}</strong></p>
+
+          <form id="order-form">
+            <label>Name:</label><br>
+            <input type="text" id="name" required><br><br>
+
+            <label>Phone:</label><br>
+            <input type="text" id="phone" required><br><br>
+
+            <label>Address:</label><br>
+            <textarea id="address" required></textarea><br><br>
+
+            <label>Email ID:</label><br>
+            <input type="email" id="email_id" required><br><br>
+
+            <label><strong>Payment Method:</strong></label><br>
+            <input type="radio" name="pay" value="Cash on Delivery" checked> Cash on Delivery<br>
+            <input type="radio" name="pay" value="Online Payment"> Online Payment (UPI / GPay / PhonePe)<br><br>
+
+            <button type="submit">Place Order</button>
+            <a href="#" class="back-btn" onclick="showCart()">⬅ Back to Cart</a>
+          </form>
+        </div>
+      `;
+
+      document.getElementById("order-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const email = document.getElementById("email_id").value.trim();
+        const paymentMethod = document.querySelector('input[name="pay"]:checked').value;
+        const total = cart.reduce((s, i) => s + i.price, 0);
+
+        // If online payment selected → show UPI modal to enter UPI ID
+        if (paymentMethod === "Online Payment") {
+          // pass order info to UPI flow
+          showUpiModal({ name, phone, address, email, paymentMethod, total });
+          return;
+        }
+
+        // COD flow - finalize order immediately
+        finalizeOrder({ name, phone, address, email, paymentMethod, total, upiId: null, provider: null });
+      });
+    }
+
+    /* inline SVG logos (rendered inside HTML) */
+    function gpaySVG(size=48) {
+      return `
+        <svg width="${size}" height="${size}" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#5aa0ff"/></linearGradient></defs>
+          <circle cx="32" cy="32" r="30" fill="#fff" stroke="#d7e3ff" stroke-width="2"/>
+          <path d="M18 36c0 12 18 12 23 6l-6-7c-5 4-13 4-17-?z" fill="transparent"/>
+          <!-- G letter style -->
+          <g transform="translate(10,14)">
+            <path d="M7 6.5C7 3.5 9.5 1 12.5 1s5.5 2.5 5.5 5.5S15.5 12 12.5 12H9v-3h3.5c1.4 0 2.5-1.1 2.5-2.5S13.9 5 12.5 5 10 6.1 10 7.5H7z" fill="#4285F4"/>
+            <circle cx="18" cy="7" r="2.5" fill="#EA4335"/>
+            <rect x="6" y="14" width="18" height="4" rx="1.2" fill="#34A853"/>
+            <rect x="6" y="20" width="12" height="4" rx="1.2" fill="#FBBC05"/>
+          </g>
+        </svg>
+      `;
+    }
+
+    function phonepeSVG(size=48) {
+      // simple purple circle with Devanagari 'पे' (pe) style text
+      return `
+        <svg width="${size}" height="${size}" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="32" cy="32" r="30" fill="#6c3ad6"/>
+          <text x="50%" y="52%" font-size="28" fill="#fff" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700">पे</text>
+        </svg>
+      `;
+    }
+
+    /* render a modal to enter UPI ID (or choose quick app) */
+    function showUpiModal(orderInfo) {
+      modalRoot.innerHTML = `
+        <div class="modal" id="upi-modal">
+          <div class="modal-box">
+            <h3>Pay via UPI</h3>
+            <p class="small">Enter your UPI ID (e.g. yourname@bank) or choose Quick Pay with an app below.</p>
+
+            <input id="upi-id" class="upi-input" placeholder="example@oksbi" autocomplete="off">
+
+            <div style="margin-top:10px;">
+              <button id="pay-with-upi">Pay with UPI ID</button>
+              <button id="upi-cancel" style="margin-left:8px; background:#777;">Cancel</button>
+            </div>
+
+            <div style="margin-top:14px;" class="small">Or choose a quick app:</div>
+
+            <div class="payment-grid" style="margin-top:10px;">
+              <div class="pay-option" id="opt-gpay" data-provider="GPay">
+                <div class="pay-logo">${gpaySVG(44)}</div>
+                <div class="pay-label">GPay</div>
+              </div>
+
+              <div class="pay-option" id="opt-phonepe" data-provider="PhonePe">
+                <div class="pay-logo">${phonepeSVG(44)}</div>
+                <div class="pay-label">PhonePe</div>
+              </div>
+            </div>
+
+            <p class="small" style="margin-top:14px;">After pressing a quick app, we will simulate the payment and show confirmation.</p>
+          </div>
+        </div>
+      `;
+
+      // attach handlers
+      document.getElementById('pay-with-upi').addEventListener('click', () => {
+        const upiId = document.getElementById('upi-id').value.trim();
+        if (!upiId) {
+          alert('Please enter UPI ID (eg: name@bank) or use Quick Pay below.');
+          return;
+        }
+        closeModal();
+        simulateProcessing(() => {
+          finalizeOrder({ ...orderInfo, upiId, provider: 'UPI' });
+        });
+      });
+
+      document.getElementById('upi-cancel').addEventListener('click', () => {
+        closeModal();
+        // go back to checkout so user can select COD or re-try
+        checkout();
+      });
+
+      // quick app flows
+      document.getElementById('opt-gpay').addEventListener('click', (e) => {
+        const provider = e.currentTarget.dataset.provider || 'GPay';
+        closeModal();
+        simulateProcessing(() => finalizeOrder({ ...orderInfo, upiId: provider.toLowerCase() + '@upi', provider }));
+      });
+
+      document.getElementById('opt-phonepe').addEventListener('click', (e) => {
+        const provider = e.currentTarget.dataset.provider || 'PhonePe';
+        closeModal();
+        simulateProcessing(() => finalizeOrder({ ...orderInfo, upiId: provider.toLowerCase() + '@upi', provider }));
+      });
+    }
+
+    function closeModal() {
+      modalRoot.innerHTML = '';
+    }
+
+    function simulateProcessing(cb) {
+      // show processing screen with spinner and message
+      mainContent.innerHTML = `
+        <div class="cart-page" style="text-align:center;">
+          <div style="font-size:48px; margin-bottom:6px;">⏳</div>
+          <p class="processing">Processing payment... Please wait</p>
+          <p class="small">Do not close this window.</p>
+        </div>
+      `;
+      setTimeout(() => {
+        cb();
+      }, 1400);
+    }
+
+    /* finalize order: save to orderHistory, clear cart, show success */
+    function finalizeOrder({ name, phone, address, email, paymentMethod, total, upiId, provider }) {
+      const deliveryDate = new Date();
+      deliveryDate.setDate(deliveryDate.getDate() + 5);
+      const formattedDate = deliveryDate.toLocaleDateString("en-IN", {
+        weekday: "long", year: "numeric", month: "long", day: "numeric"
+      });
+
+      const orderId = (paymentMethod === "Cash on Delivery" ? "COD" : (provider ? provider.toUpperCase() : "UPI")) + Math.floor(Math.random() * 900000 + 100000);
+
+      orderHistory.push({
+        id: orderId,
+        name,
+        phone,
+        address,
+        email,
+        payment: paymentMethod,
+        upi: upiId || null,
+        provider: provider || (upiId ? 'UPI' : null),
+        total,
+        date: formattedDate,
+        items: cart.slice()
+      });
+
+      localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
+
+      // choose logo block for success
+      let logoHTML = '';
+      if (provider === 'GPay') {
+        logoHTML = `<div class="success-logo" style="background:#eef6ff; border:1px solid #dceeff;">${gpaySVG(72)}</div>`;
+      } else if (provider === 'PhonePe') {
+        logoHTML = `<div class="success-logo" style="background:#f4eaff; border:1px solid #eadcff;">${phonepeSVG(72)}</div>`;
+      } else {
+        logoHTML = `<div class="success-logo" style="background:#f4f8f6; border:1px solid #e6f0ea;"><svg width="72" height="72" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="22" fill="#bde7c3"/></svg></div>`;
+      }
+
+      // success page
+      mainContent.innerHTML = `
+        <div class="cart-page" style="text-align:center;">
+          ${logoHTML}
+          <h2>✅ Payment & Order Confirmed!</h2>
+          <p><strong>Order ID:</strong> ${orderId}</p>
+          <p>Thank you, <strong>${name}</strong>!</p>
+          <p>📞 ${phone}</p>
+          <p>📦 ${address}</p>
+          <p>📧 ${email}</p>
+          <p>💳 <strong>Payment:</strong> ${paymentMethod}${ upiId ? ' (' + (provider || 'UPI') + ' — ' + upiId + ')' : '' }</p>
+          <h3>Total: $${total}</h3>
+          <p>🚚 <strong>Expected Delivery:</strong> ${formattedDate}</p>
+
+          <div style="margin-top:14px;">
+            <button onclick="showHome()">🏠 Back to Home</button>
+            <button onclick="showOrderHistory()" style="margin-left:10px; background:#28a745">View Orders</button>
+          </div>
+        </div>
+      `;
+
+      // clear cart
+      cart = [];
+      localStorage.removeItem("cart");
+      updateCartCount();
+    }
+
+    /* -------------------------
+       Order History
+       ------------------------- */
+    function showOrderHistory() {
+      const history = orderHistory || [];
+      if (history.length === 0) {
+        mainContent.innerHTML = `
+          <div class="cart-page">
+            <h2>📜 Order History</h2>
+            <p>No orders found.</p>
+            <a href="#" class="back-btn" onclick="showHome()">⬅ Back</a>
+          </div>
+        `;
+        return;
+      }
+
+      /* ---------------- DELETE ORDER ---------------- */
+function deleteOrder(index) {
+  if (confirm("Delete this order?")) {
+    orderHistory.splice(index, 1);
+    localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
+    showOrderHistory();
+  }
+}
+
+      mainContent.innerHTML = `
+        <div class="cart-page">
+          <h2>📜 Your Order History</h2>
+          ${history.map(order => `
+            <div style="display:block; margin-bottom:12px; border-bottom:1px solid #ddd; padding-bottom:8px;">
+              <p><strong>Order ID:</strong> ${order.id || ''}</p>
+              <p><strong>Name:</strong> ${order.name}</p>
+              <p><strong>Email:</strong> ${order.email}</p>
+              <p><strong>Phone:</strong> ${order.phone}</p>
+              <p><strong>Address:</strong> ${order.address}</p>
+              <p><strong>Payment:</strong> ${order.payment}${order.upi ? ` (${order.provider || 'UPI'} - ${order.upi})` : ''}</p>
+              <p><strong>Total Paid:</strong> $${order.total}</p>
+              <p><strong>Delivery Date:</strong> ${order.date}</p>
+              <h4>Items:</h4>
+              ${order.items.map(i => `
+                <div class="cart-item" style="display:flex;align-items:center;gap:10px;">
+                  <img src="${i.img}" style="width:50px;height:50px;">
+                  <div>${i.name} - $${i.price}</div>
+                </div>
+              `).join("")}
+            </div>
+          `).join("")}
+          <a href="#" class="back-btn" onclick="showHome()">⬅ Back</a>
+        </div>
+      `;
+    }
+
+    /* -------------------------
+       Event Listeners + Init
+       ------------------------- */
+    document.getElementById("homeLink").addEventListener("click", e => { e.preventDefault(); showHome(); });
+    document.getElementById("wishlistLink").addEventListener("click", e => { e.preventDefault(); showWishlist(); });
+    document.getElementById("cartLink").addEventListener("click", e => { e.preventDefault(); showCart(); });
+    document.getElementById("orderHistoryLink").addEventListener("click", e => { e.preventDefault(); showOrderHistory(); });
+
+    // initial render
+    showHome();
+    updateCartCount();
+    updateWishCount();
+  </script>
 </body>
 </html>
